@@ -1,0 +1,17 @@
+tunnel: 01077474-1853-460b-9744-7f5136679ea2
+credentials-file: /home/evil-guest/.cloudflared/01077474-1853-460b-9744-7f5136679ea2.json
+
+ingress:
+  - hostname: ai-api.edjenuwahome.uk
+    service: http://127.0.0.1:8000
+
+  - hostname: agent.edjenuwahome.uk
+    service: http://127.0.0.1:8001
+
+  - hostname: worker.edjenuwahome.uk
+    service: http://127.0.0.1:8010
+
+  - hostname: campuspaddy-ai.edjenuwahome.uk
+    service: http://127.0.0.1:3011
+
+  - service: http_status:404

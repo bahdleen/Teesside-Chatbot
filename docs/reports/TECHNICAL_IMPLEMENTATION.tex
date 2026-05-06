@@ -1,0 +1,1525 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[margin=1in,headheight=15pt]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    urlcolor=blue!70!black,
+    citecolor=blue!70!black
+}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{setspace}
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+\usepackage{caption}
+\usepackage{subcaption}
+
+% Float parameters: allow denser figure placement, no empty float-only pages
+\setcounter{topnumber}{4}
+\setcounter{bottomnumber}{3}
+\setcounter{totalnumber}{6}
+\renewcommand{\topfraction}{0.90}
+\renewcommand{\bottomfraction}{0.60}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.85}
+
+% TikZ for diagrams
+\usepackage{tikz}
+\usetikzlibrary{shapes,shapes.geometric,arrows,arrows.meta,positioning,calc,fit,backgrounds}
+
+% Code formatting
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.97,0.97,0.97}
+\definecolor{teesblue}{RGB}{0,91,172}
+\definecolor{teesgold}{RGB}{255,184,28}
+
+\lstdefinestyle{codestyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{teesblue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\small,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    stepnumber=1,
+    tabsize=2,
+    frame=single,
+    framerule=0.4pt,
+    xleftmargin=15pt,
+    extendedchars=false,
+    escapeinside={}
+}
+\lstset{style=codestyle}
+
+% Custom TypeScript/JS language (no special escape characters)
+\lstdefinelanguage{TypeScript}{
+    keywords={const,let,var,function,return,if,else,for,while,
+              async,await,new,class,interface,type,export,import,
+              from,of,in,true,false,null,undefined,break,continue,
+              default,switch,case,throw,try,catch,finally,typeof,
+              void,this,super,extends,implements,static,public,private},
+    morestring=[b]",
+    morestring=[b]',
+    morestring=[b]`,
+    morecomment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    sensitive=true
+}
+
+% Minimal JSON language
+\lstdefinelanguage{JSON}{
+    morestring=[b]",
+    morecomment=[l]{//},
+    sensitive=true
+}
+
+% INI / systemd unit file language
+\lstdefinelanguage{ini}{
+    morecomment=[l]{\#},
+    morecomment=[l]{;},
+    morestring=[b]",
+    morestring=[b]',
+    sensitive=false
+}
+
+% YAML language
+\lstdefinelanguage{yaml}{
+    keywords={true,false,null,yes,no},
+    morecomment=[l]{\#},
+    morestring=[b]",
+    morestring=[b]',
+    sensitive=false
+}
+
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small CampusPaddy AI --- Technical Implementation}
+\lhead{\small Anthony Efemena Edjenuwa}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{teesblue}}
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{teesblue!80!black}}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries}
+  {\thesubsection}{1em}{}
+
+\begin{document}
+
+%% -----------------------------------------------------------------------------
+%% TITLE PAGE
+%% -----------------------------------------------------------------------------
+\begin{titlepage}
+\centering
+\vspace*{1cm}
+
+{\color{teesblue}\rule{\linewidth}{2pt}}
+\vspace{0.5cm}
+
+{\Huge\bfseries\color{teesblue} CampusPaddy AI Chatbot}\\[0.4cm]
+{\Large\bfseries Technical Implementation Document}\\[0.3cm]
+{\large Teesside University Knowledge Retrieval System}
+
+\vspace{0.5cm}
+{\color{teesblue}\rule{\linewidth}{2pt}}
+
+\vspace{1.5cm}
+
+{\Large\textbf{Anthony Efemena Edjenuwa}}\\[0.3cm]
+{\normalsize Department of Computing}\\[0.1cm]
+{\normalsize Teesside University, Middlesbrough}\\[0.1cm]
+{\normalsize \texttt{bahdleen@outlook.com}}
+
+\vspace{1.5cm}
+
+\begin{tabular}{ll}
+\textbf{Repository:} & \url{https://github.com/bahdleen/campuspaddy-ai-complete} \\[0.3cm]
+\textbf{Public API:} & \texttt{https://campuspaddy-ai.edjenuwahome.uk/ask} \\[0.3cm]
+\textbf{Date:}       & \today \\[0.3cm]
+\textbf{Version:}    & 1.0 --- Production Release \\
+\end{tabular}
+
+\vspace{1.5cm}
+
+\begin{abstract}
+\setlength{\parindent}{0pt}
+CampusPaddy is a production-ready, AI-powered question-answering chatbot built specifically for Teesside University students. It uses Retrieval-Augmented Generation (RAG) to deliver factually grounded answers drawn entirely from real university website content. The system was conceived in the author's second year of study and built through self-directed research into ethical web scraping, full-text search, local large language model (LLM) inference, and cloud database architecture. This document covers the complete technical journey: from idea and research, through data collection on a dedicated scraper server, text chunking and migration to Neon cloud PostgreSQL, to the final deployed REST API running behind a Cloudflare Tunnel with a 7.5$\times$ caching speedup. The knowledge base comprises 25,345 text chunks extracted from 11,753 Teesside University web pages, PDFs, and Word documents.
+\end{abstract}
+
+\vfill
+{\color{teesblue}\rule{\linewidth}{1pt}}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+%% -----------------------------------------------------------------------------
+\chapter{Introduction and Motivation}
+%% -----------------------------------------------------------------------------
+
+\section{The Idea}
+
+In my second year at Teesside University I noticed a recurring frustration among students, including myself: finding accurate, up-to-date information about university services required navigating a large website, opening multiple tabs, and still not always landing on a clear answer. Questions like \textit{"How do I contact accommodation?"}, \textit{"What are the postgraduate fees for UK students?"} or \textit{"Where do I go for mental health support?"} should have instant, trustworthy answers.
+
+The idea was simple: build a chatbot that \emph{knows} the Teesside University website inside out and answers student questions in plain English with links back to the source. At the time I did not know exactly how to build it. I knew chatbots existed, I knew websites could be scraped, but I had not yet connected those pieces into a coherent architecture.
+
+\section{Research Journey}
+
+Over the following period I researched several key areas:
+
+\begin{itemize}
+    \item \textbf{Retrieval-Augmented Generation (RAG):} A technique where an LLM is given retrieved document chunks as context rather than relying solely on its training data. This was critical because I wanted the chatbot to answer from \emph{Teesside's} information, not hallucinate generic university facts.
+    \item \textbf{Ethical web scraping:} I learned that scraping a website without care can harm it --- overloading servers, ignoring legal notices, or crawling restricted areas. I specifically researched \texttt{robots.txt}, the standard file websites use to communicate what automated agents may and may not access.
+    \item \textbf{PostgreSQL full-text search:} Rather than using expensive vector embedding APIs, I decided to use PostgreSQL's built-in \texttt{tsvector} full-text search, which is powerful, free, and keeps all data local.
+    \item \textbf{Local LLM inference:} Running an LLM locally using Ollama, specifically \texttt{llama3.1:8b}, allowed me to avoid per-token API costs while maintaining answer quality.
+\end{itemize}
+
+\section{What Was Built}
+
+The result is a six-tier pipeline:
+
+\begin{enumerate}
+    \item A \textbf{BFS web crawler} that ethically scrapes \texttt{tees.ac.uk}
+    \item A \textbf{text extraction layer} handling HTML, PDF, and DOCX formats
+    \item A \textbf{chunking pipeline} storing 25,345 knowledge segments in PostgreSQL
+    \item A \textbf{migration step} moving data from a local database to Neon cloud
+    \item A \textbf{RAG retrieval API} with dual-strategy search and 14-day answer caching
+    \item A \textbf{production deployment} via systemd and Cloudflare Tunnel
+\end{enumerate}
+
+%% -----------------------------------------------------------------------------
+\chapter{Background Research}
+%% -----------------------------------------------------------------------------
+
+\section{Retrieval-Augmented Generation}
+
+Large language models have a well-known problem: they can confidently state incorrect information (hallucination). For a student support chatbot, hallucination is unacceptable --- a wrong phone number or wrong deadline could genuinely harm a student.
+
+RAG solves this by separating retrieval from generation:
+\begin{enumerate}
+    \item The user's question is used to search a curated knowledge base.
+    \item The top matching text chunks are retrieved.
+    \item Those chunks are injected into the LLM prompt as context.
+    \item The LLM generates an answer using \emph{only} the provided context.
+\end{enumerate}
+
+This means the chatbot's answers are anchored to actual Teesside University content. If the information is not in the knowledge base, the system says so rather than guessing.
+
+\section{Web Scraping Ethics and \texttt{robots.txt}}
+
+Web scraping is a powerful technique but must be done responsibly. During my research I identified three core ethical requirements:
+
+\subsubsection{1. Respect \texttt{robots.txt}}
+
+Every well-managed website publishes a \texttt{robots.txt} file (e.g., \texttt{https://www.tees.ac.uk/robots.txt}) that specifies which URL paths automated agents should not access. Ignoring this file is considered bad practice and can violate terms of service. My crawler explicitly blocks URL patterns associated with authenticated areas, admin portals, and privacy-sensitive paths --- the same areas a responsible \texttt{robots.txt} reader would avoid.
+
+\subsubsection{2. Rate Limiting}
+
+Sending hundreds of requests per second to a web server can effectively perform a denial-of-service attack. I implemented a mandatory 1,500\,ms delay between every HTTP request and identified my crawler via a descriptive \texttt{User-Agent} header so the university's server administrators could identify and contact me if needed.
+
+\subsubsection{3. Domain Containment}
+
+The crawler is hard-limited to only follow links within \texttt{tees.ac.uk} and \texttt{www.tees.ac.uk}. External links, social media, and third-party domains are never followed.
+
+\section{Full-Text Search vs.\ Vector Embeddings}
+
+Two main retrieval approaches exist for RAG:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Approach} & \textbf{Pros} & \textbf{Cons} \\
+\midrule
+Vector embeddings & Semantic search & Requires embedding API or GPU \\
+PostgreSQL full-text & Free, fast, no API & Keyword-based, less semantic \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+I chose PostgreSQL full-text search for its simplicity and zero external dependency. The university-specific vocabulary (course names, department names, service names) is well-suited to keyword matching. I compensated for semantic gaps by implementing a keyword fallback strategy and careful scoring weights.
+
+%% -----------------------------------------------------------------------------
+\chapter{Logical System Design}
+%% -----------------------------------------------------------------------------
+
+\section{High-Level Architecture}
+
+The system consists of two physically separate components operating in sequence.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=0.6cm and 1.8cm,
+    every node/.style={font=\small},
+    box/.style={rectangle, rounded corners=4pt, draw=teesblue, fill=teesblue!10,
+                minimum width=2.8cm, minimum height=0.75cm, text centered, text width=2.6cm},
+    dbbox/.style={cylinder, shape border rotate=90, draw=teesgold!80!black,
+                  fill=teesgold!20, minimum height=1.1cm, minimum width=1.4cm,
+                  text centered, font=\small},
+    arrow/.style={-{Stealth[length=6pt]}, thick, color=teesblue!70},
+    label/.style={font=\scriptsize\itshape, color=gray}
+]
+
+% Column 1 -- Scraper
+\node[box] (web)       {Teesside University Website};
+\node[box, below=of web]  (robots)   {robots.txt Check};
+\node[box, below=of robots] (crawler) {BFS Crawler (crawlTeesside.ts)};
+\node[box, below=of crawler] (storage) {Local File Storage};
+\node[dbbox, below=of storage] (localdb)  {Local PostgreSQL};
+
+% Column 2 -- Migration
+\node[box, right=2.2cm of localdb]  (migrate)  {pg\_dump + pg\_restore};
+\node[dbbox, above=of migrate]  (neon)     {Neon Cloud PostgreSQL};
+
+% Column 3 -- AI API
+\node[box, above=of neon]   (api)      {Express.js API (port 3011)};
+\node[box, above=of api]    (cache)    {Cache Layer (14-day TTL)};
+\node[box, above=of cache]  (ollama)   {Ollama llama3.1:8b};
+\node[box, above=of ollama] (cf)       {Cloudflare Tunnel};
+\node[box, above=of cf]     (public)   {Public API (HTTPS)};
+
+% Processing chain (left column)
+\draw[arrow] (web)     -- (robots);
+\draw[arrow] (robots)  -- (crawler);
+\draw[arrow] (crawler) -- (storage);
+\draw[arrow] (storage) -- (localdb);
+
+% Migration
+\draw[arrow] (localdb) -- (migrate);
+\draw[arrow] (migrate) -- (neon);
+
+% API chain
+\draw[arrow] (neon)   -- (api);
+\draw[arrow] (api)    -- (cache);
+\draw[arrow] (cache)  -- (ollama);
+\draw[arrow] (ollama) -- (cf);
+\draw[arrow] (cf)     -- (public);
+
+% Labels
+\node[label, left=0.15cm of robots]  {Ethical gate};
+\node[label, right=0.15cm of migrate] {One-time};
+
+\end{tikzpicture}
+\caption{Complete CampusPaddy AI system pipeline from data collection to public API}
+\label{fig:architecture}
+\end{figure}
+
+\section{Entity-Relationship Diagram}
+
+The database schema follows a clear hierarchy: a university owns crawl URLs and knowledge sources; each source is chunked into knowledge segments; the cache table stores pre-generated answers.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.6cm and 2.4cm,
+    every node/.style={font=\small},
+    entity/.style={rectangle, draw=teesblue, fill=teesblue!8,
+                   minimum width=3.2cm, minimum height=0.7cm,
+                   text centered, rounded corners=3pt},
+    attr/.style={ellipse, draw=gray, fill=gray!10,
+                 minimum width=2cm, minimum height=0.5cm,
+                 text centered, font=\scriptsize},
+    rel/.style={diamond, draw=teesgold!80!black, fill=teesgold!20,
+                minimum width=1.5cm, minimum height=0.9cm,
+                text centered, font=\scriptsize\bfseries},
+    line/.style={-, thick, color=teesblue!60},
+    arrow/.style={-{Stealth[length=5pt]}, thick, color=teesblue!70}
+]
+
+% Entities
+\node[entity] (univ) {universities};
+\node[entity, below=2cm of univ] (curl) {crawl\_urls};
+\node[entity, right=3cm of curl] (ksrc) {knowledge\_sources};
+\node[entity, below=2cm of ksrc] (kchk) {knowledge\_chunks};
+\node[entity, right=3cm of ksrc] (cach) {chatbot\_cached\_answers};
+
+% Key attributes
+\node[attr, above=0.8cm of univ]      (uid)   {id (UUID)};
+\node[attr, left=0.8cm of univ]       (udom)  {domain};
+\node[attr, right=0.8cm of univ]      (uname) {name};
+
+\node[attr, left=0.8cm of curl]       (cstatus) {status};
+\node[attr, below=0.6cm of curl]      (cdepth)  {depth};
+
+\node[attr, above=0.8cm of ksrc]      (kstitle)  {title};
+\node[attr, right=0.8cm of ksrc]      (kstype)   {source\_type};
+
+\node[attr, left=0.8cm of kchk]       (kctxt)   {chunk\_text};
+\node[attr, below=0.6cm of kchk]      (kcsv)    {chunk\_search \_vector};
+
+\node[attr, above=0.7cm of cach]      (cq)      {normalized\_question};
+\node[attr, right=0.8cm of cach]      (cttl)    {expires\_at (14d)};
+
+% Relationships (cardinality lines)
+\draw[line] (univ) -- node[midway, left]{\scriptsize 1} (curl)
+            node[near end, right]{\scriptsize N};
+\draw[line] (univ) -- node[midway, left, xshift=4pt]{\scriptsize 1} (ksrc)
+            node[near end, right, xshift=-4pt]{\scriptsize N};
+\draw[line] (ksrc) -- node[midway, left]{\scriptsize 1} (kchk)
+            node[near end, right]{\scriptsize N};
+
+% Attribute connections
+\draw[line, gray!50] (univ) -- (uid);
+\draw[line, gray!50] (univ) -- (udom);
+\draw[line, gray!50] (univ) -- (uname);
+\draw[line, gray!50] (curl) -- (cstatus);
+\draw[line, gray!50] (curl) -- (cdepth);
+\draw[line, gray!50] (ksrc) -- (kstitle);
+\draw[line, gray!50] (ksrc) -- (kstype);
+\draw[line, gray!50] (kchk) -- (kctxt);
+\draw[line, gray!50] (kchk) -- (kcsv);
+\draw[line, gray!50] (cach) -- (cq);
+\draw[line, gray!50] (cach) -- (cttl);
+
+% Standalone cache note
+\node[font=\scriptsize\itshape, below=0.3cm of cach] {(keyed by domain + question)};
+
+\end{tikzpicture}
+\caption{Entity-Relationship diagram for the CampusPaddy knowledge base}
+\label{fig:erd}
+\end{figure}
+
+\section{Data Flow Diagram}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=0.5cm and 0.3cm,
+    every node/.style={font=\small},
+    proc/.style={rectangle, rounded corners=5pt, draw=teesblue, fill=teesblue!12,
+                 minimum width=2.4cm, minimum height=0.65cm, text centered, text width=2.2cm},
+    store/.style={rectangle, draw=teesgold!80!black, fill=teesgold!15,
+                  minimum width=2.2cm, minimum height=0.55cm, text centered},
+    ext/.style={rectangle, draw=gray, fill=gray!12,
+                minimum width=2.2cm, minimum height=0.55cm, text centered},
+    arrow/.style={-{Stealth[length=5pt]}, thick},
+    bluearrow/.style={arrow, color=teesblue!70},
+    goldarrow/.style={arrow, color=teesgold!80!black}
+]
+
+% Row 1
+\node[ext]  (src)  {tees.ac.uk};
+\node[proc, right=1.2cm of src]   (crawl) {BFS Crawler};
+\node[store, right=1.2cm of crawl] (raw)   {Raw Files\,(disk)};
+\node[proc, right=1.2cm of raw]   (ext)   {Text Extractor\,(Cheerio/pdf-parse/\,mammoth)};
+
+% Row 2 (below)
+\node[proc, below=1.5cm of ext]   (chunk) {Chunker\,(3000\,char\,+\,400 overlap)};
+\node[store, left=1.2cm of chunk] (localdb) {Local\,PostgreSQL};
+\node[proc, left=1.2cm of localdb] (migrate) {pg\_dump\,+\,pg\_restore};
+\node[store, left=1.2cm of migrate] (neon)   {Neon\,Cloud DB};
+
+% Row 3 (bottom)
+\node[ext, below=1.5cm of neon]   (client) {Student\,(API client)};
+\node[proc, right=1.2cm of client] (api)    {Express.js\,API};
+\node[proc, right=1.2cm of api]   (search) {tsvector\,Search};
+\node[proc, right=1.2cm of search] (llm)    {Ollama\,llama3.1:8b};
+
+% Arrows row 1
+\draw[bluearrow] (src)   -- (crawl);
+\draw[bluearrow] (crawl) -- (raw);
+\draw[bluearrow] (raw)   -- (ext);
+\draw[bluearrow] (ext)   -- (chunk);
+
+% Arrows row 2
+\draw[bluearrow] (chunk)   -- (localdb);
+\draw[goldarrow] (localdb) -- (migrate);
+\draw[goldarrow] (migrate) -- (neon);
+
+% Arrows row 3
+\draw[bluearrow] (client) -- (api);
+\draw[bluearrow] (api)    -- (search);
+\draw[bluearrow] (search) -- node[above, font=\scriptsize]{chunks} (llm);
+\draw[bluearrow] (neon)   -- (api);
+\draw[bluearrow] (llm)    edge[bend left=25] node[right, font=\scriptsize]{answer} (client);
+
+\end{tikzpicture}
+\caption{Data flow from university website to student answer}
+\label{fig:dataflow}
+\end{figure}
+
+\section{RAG Query Execution Flow}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=0.55cm and 2cm,
+    every node/.style={font=\small},
+    proc/.style={rectangle, rounded corners=4pt, draw=teesblue, fill=teesblue!10,
+                 minimum width=3cm, minimum height=0.65cm, text centered},
+    dec/.style={diamond, draw=teesgold!80!black, fill=teesgold!20,
+                minimum width=2.4cm, minimum height=1.1cm, text centered, font=\small},
+    arrow/.style={-{Stealth[length=5pt]}, thick, color=teesblue!70}
+]
+
+\node[proc] (q)       {Student Question};
+\node[proc, below=of q] (norm)    {Normalise Question};
+\node[proc, below=of norm] (lookup)  {Cache Lookup};
+\node[dec,  below=of lookup] (hit)     {Cache Hit?};
+\node[proc, below left=1cm and 1.4cm of hit]  (fts)  {Full-Text Search\,(tsvector)};
+\node[proc, below=0.55cm of fts]              (fall) {Keyword Fallback\,(if no results)};
+\node[proc, below=0.55cm of fall]             (div)  {Chunk Diversification\,(max 2 per URL)};
+\node[proc, below=0.55cm of div]              (ctx)  {Build Context};
+\node[proc, below=0.55cm of ctx]              (llm)  {Ollama Inference\,(llama3.1:8b)};
+\node[proc, below=0.55cm of llm]              (save) {Save to Cache};
+\node[proc, below right=1cm and 1.4cm of hit] (ret)  {Return Cached Answer (0.2\,s)};
+
+% Merge point
+\node[proc, below=0.55cm of save]             (resp) {JSON Response\,+ Sources};
+
+% Arrows
+\draw[arrow] (q)      -- (norm);
+\draw[arrow] (norm)   -- (lookup);
+\draw[arrow] (lookup) -- (hit);
+\draw[arrow] (hit) -- node[left, font=\scriptsize]{No} (fts);
+\draw[arrow] (hit) -- node[right, font=\scriptsize]{Yes} (ret);
+\draw[arrow] (fts)  -- (fall);
+\draw[arrow] (fall) -- (div);
+\draw[arrow] (div)  -- (ctx);
+\draw[arrow] (ctx)  -- (llm);
+\draw[arrow] (llm)  -- (save);
+\draw[arrow] (save) -- (resp);
+\draw[arrow] (ret)  |- (resp);
+
+\end{tikzpicture}
+\caption{RAG query execution flow with dual-strategy retrieval and caching}
+\label{fig:rag_flow}
+\end{figure}
+
+%% -----------------------------------------------------------------------------
+\chapter{Infrastructure Setup}
+%% -----------------------------------------------------------------------------
+
+\section{Why a Dedicated Scraper Server}
+
+Running a web crawler from a personal laptop is impractical: the machine must stay on and connected for the 6--8 hours a full crawl takes. More importantly, crawling from a dynamic home IP address is less transparent than using a server with a stable, identifiable address.
+
+I decided to run the scraper on a Linux server (Ubuntu) where I had full control. This server also ran a local PostgreSQL instance to store the scraped data incrementally --- if the crawl was interrupted, it could resume from where it left off without re-downloading files that were already stored.
+
+\section{Local PostgreSQL and Adminer}
+
+After installing PostgreSQL I added Adminer --- a lightweight, single-file PHP database management tool accessible via a web browser on port 8080. Adminer gave me a graphical interface to inspect the database during development: I could verify the schema, browse rows, and run ad-hoc SQL queries without needing a desktop GUI tool.
+
+\section{Database Setup Script}
+
+\begin{lstlisting}[language=bash, caption=Local PostgreSQL setup (condensed from install script)]
+sudo apt install postgresql postgresql-contrib
+
+sudo -u postgres psql <<'SQL'
+CREATE USER campuspaddy WITH PASSWORD 'campuspaddy';
+CREATE DATABASE campuspaddy_local OWNER campuspaddy;
+GRANT ALL PRIVILEGES ON DATABASE campuspaddy_local TO campuspaddy;
+SQL
+
+psql postgresql://campuspaddy:campuspaddy@localhost:5432/campuspaddy_local \
+  -f db/schema.sql
+\end{lstlisting}
+
+%% -----------------------------------------------------------------------------
+\chapter{Web Scraping Implementation}
+%% -----------------------------------------------------------------------------
+
+\section{Crawler Design}
+
+The crawler (\texttt{campuspaddy-ai-importer/src/crawlTeesside.ts}) uses Breadth-First Search (BFS) to systematically discover and download pages from \texttt{tees.ac.uk}. BFS was chosen over Depth-First Search because it naturally prioritises pages close to the homepage --- which tend to be the most important and student-relevant --- before diving into deeply nested paths.
+
+\subsection{Entry Points}
+
+Discovery begins from nine hand-picked start URLs covering the main student-facing sections, supplemented by sitemap parsing:
+
+\begin{lstlisting}[language=TypeScript, caption=Crawler start URLs and sitemap sources]
+const START_URLS = [
+  "https://www.tees.ac.uk/",
+  "https://www.tees.ac.uk/sections/stud/index.cfm",
+  "https://www.tees.ac.uk/sections/stud/support.cfm",
+  "https://www.tees.ac.uk/sections/accommodation/index.cfm",
+  "https://www.tees.ac.uk/docs/index.cfm?folder_id=57",
+  "https://www.tees.ac.uk/sections/fulltime/index.cfm",
+  "https://www.tees.ac.uk/sections/international/index.cfm",
+  "https://www.tees.ac.uk/sections/studying/index.cfm",
+  "https://www.tees.ac.uk/sections/teessidelife/index.cfm"
+];
+
+const SITEMAP_URLS = [
+  "https://www.tees.ac.uk/sitemap.xml",
+  "https://tees.ac.uk/sitemap.xml",
+  "https://www.tees.ac.uk/sitemap_index.xml"
+];
+\end{lstlisting}
+
+\subsection{Politeness and Rate Limiting}
+
+\begin{lstlisting}[language=TypeScript, caption=Crawler configuration constants]
+const REQUEST_DELAY_MS    = 1500;  // 1.5s between every request
+const MAX_DEPTH           = 8;     // BFS depth limit
+const MAX_PAGES           = 5000;  // Total page ceiling
+const MAX_DOWNLOAD_BYTES  = 50 * 1024 * 1024; // 50 MB file limit
+const USER_AGENT = "CampusPaddy-Bot/1.0 (+educational-project@tees.ac.uk)";
+\end{lstlisting}
+
+\subsection{robots.txt Compliance --- Blocked URL Patterns}
+
+The following URL patterns are permanently blocked, mirroring what a \texttt{robots.txt}-compliant crawler should skip:
+
+\begin{lstlisting}[language=TypeScript, caption=Blocked URL patterns (robots.txt compliance)]
+const BLOCKED_URL_PARTS = [
+  "mailto:", "tel:", "javascript:",
+  // Search endpoints (often disallowed)
+  "/search", "/site-search",
+  // Authenticated / private areas
+  "/login", "/logout", "/account", "/signin",
+  "/apply/login", "/portal", "/blackboard",
+  "/mymail", "/e-vision", "/sits",
+  // External social media
+  "facebook.com", "twitter.com", "x.com",
+  "instagram.com", "linkedin.com", "youtube.com",
+  // Legal / cookie pages (not student support content)
+  "cookies.cfm", "cookie", "privacy.cfm",
+  "copyright.cfm", "modern_slavery", "accessibility_statement"
+];
+\end{lstlisting}
+
+\subsection{Domain Containment}
+
+All discovered links are normalised to \texttt{www.tees.ac.uk}. Any link pointing outside this domain is discarded:
+
+\begin{lstlisting}[language=TypeScript, caption=Domain normalisation]
+function normaliseUrl(raw: string): string | null {
+  const url = new URL(raw);
+  const hostname = url.hostname.toLowerCase();
+  if (!(hostname === "tees.ac.uk" || hostname === "www.tees.ac.uk"))
+    return null;
+  url.protocol = "https:";
+  url.hostname = "www.tees.ac.uk";
+  url.hash    = "";           // strip fragment
+  return url.toString();
+}
+\end{lstlisting}
+
+\subsection{Ignored File Types}
+
+Binary files that contain no useful text are discarded immediately on discovery:
+
+\begin{lstlisting}[language=TypeScript, caption=File extensions silently skipped]
+const IGNORED_EXTENSIONS = [
+  ".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".ico",
+  ".css", ".js", ".mp4", ".mp3", ".avi", ".mov",
+  ".zip", ".rar", ".7z", ".tar", ".gz", ".xml", ".rss"
+];
+\end{lstlisting}
+
+\section{Content Type Detection}
+
+The crawler detects source type from both the URL path and the HTTP \texttt{Content-Type} header:
+
+\begin{lstlisting}[language=TypeScript, caption=Source type detection]
+function getSourceType(url: string, contentType: string | null) {
+  const path = new URL(url).pathname.toLowerCase();
+  const ct   = contentType?.toLowerCase() ?? "";
+  if (path.endsWith(".pdf") || ct.includes("application/pdf")) return "pdf";
+  if (path.endsWith(".docx"))                                   return "docx";
+  if (path.endsWith(".doc"))                                    return "doc";
+  if (ct.includes("text/html") ||
+      ["cfm","html","htm"].some(e => path.endsWith("." + e)))  return "html";
+  return "other";
+}
+\end{lstlisting}
+
+\section{Storage Structure}
+
+Downloaded files are stored on disk under a structured directory tree while their metadata is tracked in PostgreSQL:
+
+\begin{lstlisting}
+storage/
++-- raw-html/   # Saved HTML pages  (.html)
++-- pdfs/       # Downloaded PDFs   (.pdf)
++-- other/      # DOCX, DOC, etc.
+\end{lstlisting}
+
+Keeping raw files on disk meant the text extraction step could be re-run without re-downloading --- important when experimenting with different extraction strategies.
+
+%% -----------------------------------------------------------------------------
+\chapter{Data Processing Pipeline}
+%% -----------------------------------------------------------------------------
+
+\section{Text Extraction}
+
+Three libraries handle the three document formats:
+
+\begin{table}[H]
+\centering
+\caption{Text extraction libraries by source type}
+\begin{tabular}{lll}
+\toprule
+\textbf{Format} & \textbf{Library} & \textbf{Notes} \\
+\midrule
+HTML  & Cheerio       & Removes script/style tags, extracts visible text \\
+PDF   & pdf-parse     & Parses binary PDF, extracts text from all pages \\
+DOCX  & mammoth       & Parses Office Open XML, preserves paragraph structure \\
+DOC   & \emph{unsupported} & Binary format; 22 files logged as failed \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Chunking Strategy}
+
+Long documents are split into overlapping chunks. Rather than hard-cutting at a character boundary, the chunker respects sentence structure to avoid splitting a sentence mid-way:
+
+\begin{itemize}[nosep]
+    \item \textbf{Target chunk size:} $\approx$3,000 characters
+    \item \textbf{Overlap:} 400 characters between adjacent chunks
+    \item \textbf{Metadata stored with each chunk:} title, source URL, source type, chunk index
+\end{itemize}
+
+Overlap ensures that a sentence spanning the boundary of two raw chunks is fully represented in at least one chunk --- preventing partial context from being retrieved.
+
+\section{Batch Processing with Concurrency Control}
+
+The processor (\texttt{processAllSources.ts}) uses PostgreSQL's \texttt{FOR UPDATE SKIP LOCKED} to claim a batch of sources atomically, preventing any two parallel processes from processing the same source:
+
+\begin{lstlisting}[language=sql, caption=Atomic batch claim preventing race conditions]
+BEGIN;
+UPDATE knowledge_sources
+SET    status = 'processing'
+WHERE  id IN (
+    SELECT id FROM knowledge_sources
+    WHERE  status = 'pending'
+    LIMIT  100
+    FOR UPDATE SKIP LOCKED
+)
+RETURNING id;
+-- ... process batch ...
+COMMIT; -- or ROLLBACK on error
+\end{lstlisting}
+
+This design allowed me to run multiple processor instances safely, and meant that a crash mid-batch would automatically release the lock so the next run could retry.
+
+\section{Processing Statistics}
+
+\begin{table}[H]
+\centering
+\caption{Final processing results}
+\begin{tabular}{lr}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Total sources attempted    & 12,059 \\
+Successfully processed     & 11,753 \\
+Failed (mostly .doc)       & 306 \\
+Success rate               & 97.4\% \\
+Total knowledge chunks     & 25,345 \\
+\midrule
+HTML pages                 & 11,503 (97.9\%) \\
+PDF documents              & 454 (3.9\%) \\
+DOCX files                 & 80 (0.7\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% -----------------------------------------------------------------------------
+\chapter{Database Design and Migration to Neon}
+%% -----------------------------------------------------------------------------
+
+\section{Schema Overview}
+
+\subsection{universities}
+
+\begin{lstlisting}[language=sql]
+CREATE TABLE universities (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name       TEXT NOT NULL,
+  domain     TEXT NOT NULL UNIQUE,  -- "tees.ac.uk"
+  created_at TIMESTAMP DEFAULT now()
+);
+\end{lstlisting}
+
+Designed for multi-tenancy from the start: a future deployment could serve multiple universities from the same schema by partitioning on \texttt{domain}.
+
+\subsection{crawl\_urls}
+
+\begin{lstlisting}[language=sql]
+CREATE TABLE crawl_urls (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  university_id   UUID REFERENCES universities(id) ON DELETE CASCADE,
+  url             TEXT NOT NULL UNIQUE,
+  status          TEXT DEFAULT 'pending',  -- pending/done/failed/skipped
+  content_type    TEXT,
+  discovered_from TEXT,
+  depth           INT  DEFAULT 0,
+  last_error      TEXT,
+  created_at      TIMESTAMP DEFAULT now(),
+  scraped_at      TIMESTAMP
+);
+CREATE INDEX crawl_urls_status_depth_idx ON crawl_urls(status, depth);
+\end{lstlisting}
+
+\subsection{knowledge\_sources}
+
+\begin{lstlisting}[language=sql]
+CREATE TABLE knowledge_sources (
+  id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  university_id    UUID REFERENCES universities(id) ON DELETE CASCADE,
+  url              TEXT NOT NULL UNIQUE,
+  title            TEXT,
+  source_type      TEXT NOT NULL,   -- html / pdf / docx / doc
+  raw_file_path    TEXT,
+  extracted_text   TEXT,
+  content_hash     TEXT,            -- SHA-256 for duplicate detection
+  status           TEXT DEFAULT 'pending',
+  processing_error TEXT,
+  processed_at     TIMESTAMP,
+  created_at       TIMESTAMP DEFAULT now(),
+  updated_at       TIMESTAMP DEFAULT now()
+);
+\end{lstlisting}
+
+\subsection{knowledge\_chunks}
+
+\begin{lstlisting}[language=sql]
+CREATE TABLE knowledge_chunks (
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  source_id           UUID REFERENCES knowledge_sources(id) ON DELETE CASCADE,
+  university_id       UUID REFERENCES universities(id) ON DELETE CASCADE,
+  chunk_index         INT  NOT NULL,
+  chunk_text          TEXT NOT NULL,
+  metadata            JSONB,   -- {title, url, source_type}
+  created_at          TIMESTAMP DEFAULT now(),
+  -- Added during optimisation phase (Chapter 9):
+  chunk_search_vector tsvector GENERATED ALWAYS AS
+    (to_tsvector('english', chunk_text)) STORED
+);
+CREATE INDEX chunk_fts_idx ON knowledge_chunks USING GIN(chunk_search_vector);
+\end{lstlisting}
+
+\subsection{chatbot\_cached\_answers}
+
+\begin{lstlisting}[language=sql]
+CREATE TABLE chatbot_cached_answers (
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  university_domain   TEXT NOT NULL DEFAULT 'tees.ac.uk',
+  normalized_question TEXT NOT NULL,
+  original_question   TEXT NOT NULL,
+  answer              TEXT NOT NULL,
+  sources             JSONB NOT NULL DEFAULT '[]',
+  model               TEXT,
+  retrieval_count     INT  DEFAULT 0,
+  hit_count           INT  DEFAULT 0,
+  is_active           BOOLEAN DEFAULT true,
+  expires_at          TIMESTAMPTZ DEFAULT now() + interval '14 days',
+  created_at          TIMESTAMPTZ DEFAULT now(),
+  updated_at          TIMESTAMPTZ DEFAULT now(),
+  last_hit_at         TIMESTAMPTZ,
+  UNIQUE (university_domain, normalized_question)
+);
+\end{lstlisting}
+
+\section{Migration to Neon Cloud PostgreSQL}
+
+Once the local knowledge base was built and verified, the data needed to move to a cloud database so the AI server (on a different machine) could access it without a direct network link to the scraper machine.
+
+I chose \textbf{Neon} --- a serverless PostgreSQL provider with a generous free tier, connection pooling, and TLS by default. The migration used standard PostgreSQL tools:
+
+\begin{lstlisting}[language=bash, caption=One-shot migration from local PostgreSQL to Neon]
+# 1. Export local database (custom format for speed)
+pg_dump --format=custom \
+  "postgresql://campuspaddy:campuspaddy@localhost/campuspaddy_local" \
+  -f campuspaddy_backup.dump
+
+# 2. Restore to Neon (pg_restore handles custom format)
+pg_restore --no-owner --no-privileges \
+  -d "$NEON_DATABASE_URL" \
+  campuspaddy_backup.dump
+
+# 3. Verify
+psql "$NEON_DATABASE_URL" \
+  -c "SELECT COUNT(*) FROM knowledge_chunks;"
+# => 25345
+\end{lstlisting}
+
+After confirming the chunk count matched, I updated the AI server's \texttt{.env} to point at \texttt{NEON\_DATABASE\_URL} and discarded the local connection string from production configuration.
+
+%% -----------------------------------------------------------------------------
+\chapter{Retrieval-Augmented Generation}
+%% -----------------------------------------------------------------------------
+
+\section{Dual-Strategy Retrieval}
+
+Retrieval uses two sequential strategies. Strategy~1 is tried first; Strategy~2 is the fallback.
+
+\subsection{Strategy 1: Full-Text Search with \texttt{tsvector}}
+
+PostgreSQL converts both the query and the stored chunk text to \texttt{tsvector} (stemmed, stop-word-filtered token vectors) and uses an inverted GIN index for fast lookup:
+
+\begin{lstlisting}[language=sql, caption=Full-text search query with composite scoring]
+WITH query AS (
+  SELECT websearch_to_tsquery('english', $1) AS q
+)
+SELECT
+  ks.title,
+  ks.url,
+  ks.source_type,
+  kc.chunk_index,
+  kc.chunk_text,
+  (  ts_rank_cd(kc.chunk_search_vector, q.q) * 1.0
+   + ts_rank_cd(ks.source_search_vector, q.q) * 2.5
+   + CASE
+       WHEN ks.url LIKE '%/sections/stud/%'          THEN 0.08
+       WHEN ks.url LIKE '%/sections/accommodation/%' THEN 0.08
+       WHEN ks.url LIKE '%/sections/support%'        THEN 0.06
+       WHEN ks.url LIKE '%/docs/%'                   THEN 0.04
+       ELSE 0
+     END
+  ) AS score
+FROM knowledge_chunks kc
+JOIN knowledge_sources ks ON ks.id = kc.source_id, query q
+WHERE ks.status = 'processed'
+  AND (   kc.chunk_search_vector @@ q.q
+       OR ks.source_search_vector @@ q.q )
+ORDER BY score DESC
+LIMIT 18;   -- oversample; diversify down to 3 afterwards
+\end{lstlisting}
+
+The scoring formula is:
+
+\begin{equation}
+\text{score} = 1.0 \cdot \text{rank}_{\text{chunk}} + 2.5 \cdot \text{rank}_{\text{source}} + \text{boost}_{\text{url}}
+\end{equation}
+
+Source-title relevance ($w=2.5$) is weighted higher than chunk-body relevance ($w=1.0$) because a matching page title is a stronger signal of relevance than a keyword appearing once in the body.
+
+\subsection{Strategy 2: Keyword Fallback}
+
+If the full-text search returns zero rows --- which can happen for very short or unusual queries --- a simpler keyword fallback runs using \texttt{ILIKE} matching against the title, URL, and chunk text.
+
+\subsection{Chunk Diversification}
+
+To avoid returning three chunks from the same page (which would waste context window space), retrieved candidates are diversified:
+
+\begin{lstlisting}[language=TypeScript, caption=Chunk diversification: max 2 per source URL]
+function diversify(chunks: Chunk[], limit: number): Chunk[] {
+  const selected: Chunk[]         = [];
+  const countByUrl = new Map<string, number>();
+
+  for (const chunk of chunks) {
+    const n = countByUrl.get(chunk.url) ?? 0;
+    if (n >= 2) continue;
+    selected.push(chunk);
+    countByUrl.set(chunk.url, n + 1);
+    if (selected.length >= limit) break;
+  }
+  return selected;
+}
+\end{lstlisting}
+
+Starting with 18 candidates and limiting to 2 per URL typically yields a final 3-chunk context spanning at least 2 different source pages.
+
+%% -----------------------------------------------------------------------------
+\chapter{Large Language Model Integration}
+%% -----------------------------------------------------------------------------
+
+\section{Ollama and llama3.1:8b}
+
+Rather than calling an external LLM API (OpenAI, Anthropic, etc.), I ran the model locally using \textbf{Ollama} --- an open-source LLM runner that exposes a simple REST API on \texttt{localhost:11434}. The model chosen was \texttt{llama3.1:8b}: an 8-billion parameter Meta model with a 4,096-token context window, quantised to 4-bit to fit comfortably in GPU memory.
+
+\begin{table}[H]
+\centering
+\caption{Hardware and model specifications}
+\begin{tabular}{ll}
+\toprule
+\textbf{Component} & \textbf{Value} \\
+\midrule
+GPU             & NVIDIA Tesla P40 \\
+VRAM            & 23,040 MiB \\
+CUDA version    & 12.2 \\
+Driver          & 535.288.01 \\
+Model           & llama3.1:8b (4-bit quantised) \\
+Model VRAM used & $\approx$6,000 MiB \\
+Context window  & 4,096 tokens \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{System Prompt Design}
+
+The system prompt is deliberately strict to prevent hallucination:
+
+\begin{lstlisting}[caption=Ollama system prompt]
+You are CampusPaddy, a friendly Teesside University student companion.
+
+Answer using ONLY the provided Teesside University context below.
+
+Rules:
+- Be clear, helpful, and concise
+- Prefer short answers unless the student asks for detail
+- Do NOT invent information not present in the context
+- If the context does not contain the answer, say exactly:
+  "I could not find that in the Teesside University information I have."
+- Reference sources as [Source 1], [Source 2] when useful
+- For urgent issues (mental health, safety), always encourage
+  contacting university services directly
+\end{lstlisting}
+
+\section{Model Parameters}
+
+\begin{table}[H]
+\centering
+\caption{Ollama inference parameters}
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Value} & \textbf{Reason} \\
+\midrule
+temperature  & 0.2  & Low randomness --- factual answers \\
+top\_p       & 0.9  & Nucleus sampling for fluency \\
+num\_ctx     & 4096 & Full context window \\
+num\_predict & 150  & Short answers save inference time \\
+keep\_alive  & 24h  & Model stays loaded in VRAM \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Context Construction}
+
+Each retrieved chunk is formatted as a numbered source block before being injected into the prompt:
+
+\begin{lstlisting}[language=TypeScript, caption=Building the LLM context string]
+function buildContext(chunks: Chunk[]): string {
+  return chunks.map((c, i) => [
+    `SOURCE ${i + 1}`,
+    `Title: ${c.title ?? "Untitled"}`,
+    `URL:   ${c.url}`,
+    `Type:  ${c.source_type}`,
+    `Content:`,
+    c.chunk_text.slice(0, 1000)   // cap at 1000 chars per chunk
+  ].join("\n")).join("\n\n---\n\n");
+}
+\end{lstlisting}
+
+%% -----------------------------------------------------------------------------
+\chapter{Caching Strategy}
+%% -----------------------------------------------------------------------------
+
+\section{Why Cache?}
+
+Students ask the same questions repeatedly. \textit{"How do I apply for accommodation?"}, \textit{"What is ExpoTees?"}, and \textit{"Where do I get mental health support?"} are asked by many students across different sessions. Rather than spending 5+ seconds on Ollama inference every time, a cached answer returns in $\approx$0.2\,seconds.
+
+\section{Question Normalisation}
+
+Two questions that differ only in punctuation or case are treated as the same:
+
+\begin{lstlisting}[language=TypeScript, caption=Question normalisation for cache key generation]
+function normalise(q: string): string {
+  return q.toLowerCase()
+          .replace(/[^a-z0-9\s]/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+}
+// "How do I contact Accommodation?!"  =>  "how do i contact accommodation"
+// "how do i contact accommodation"    =>  "how do i contact accommodation"
+// Both hit the same cache entry.
+\end{lstlisting}
+
+\section{Cache Lifecycle}
+
+\begin{enumerate}
+    \item Incoming question is normalised.
+    \item Database lookup on \texttt{(university\_domain, normalized\_question)} with \texttt{is\_active = true} and \texttt{expires\_at > now()}.
+    \item \textbf{Hit:} Return stored answer immediately, increment \texttt{hit\_count}, update \texttt{last\_hit\_at}.
+    \item \textbf{Miss:} Run full RAG pipeline, store result with a 14-day TTL.
+    \item Stale or incorrect answers can be deactivated via \texttt{POST /cache/clear} without deleting the row.
+\end{enumerate}
+
+\section{Cache Performance}
+
+\begin{table}[H]
+\centering
+\caption{Response time comparison: cached vs.\ uncached}
+\begin{tabular}{lll}
+\toprule
+\textbf{Scenario} & \textbf{Time} & \textbf{Speedup} \\
+\midrule
+Cache hit             & $\approx$0.2\,s  & 26.5$\times$ baseline \\
+Full uncached request & $\approx$5.3\,s  & 1$\times$ baseline \\
+Retrieval only        & $\approx$0.95\,s & ---  \\
+Ollama inference only & $\approx$4.3\,s  & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The cache delivers a \textbf{26.5$\times$ speedup} on hits (or 7.5$\times$ compared to the pre-optimisation baseline of 1.5\,s retrieval). In production, a 60--70\% cache hit rate has been observed for the most common student queries.
+
+%% -----------------------------------------------------------------------------
+\chapter{REST API}
+%% -----------------------------------------------------------------------------
+
+\section{Server Configuration}
+
+The Express.js server (\texttt{campuspaddy-retrieval-api/src/server.ts}) listens exclusively on \texttt{127.0.0.1:3011} --- never on a public interface. All external traffic reaches it via the Cloudflare Tunnel, which provides TLS termination and DDoS protection.
+
+\begin{lstlisting}[language=TypeScript, caption=Server startup]
+const app  = express();
+const PORT = parseInt(process.env.PORT ?? "3011");
+
+app.use(cors());
+app.use(express.json({ limit: "1mb" }));
+
+app.listen(PORT, "127.0.0.1", () =>
+  console.log(`CampusPaddy API running on http://127.0.0.1:${PORT}`));
+\end{lstlisting}
+
+\section{Authentication Middleware}
+
+\begin{lstlisting}[language=TypeScript, caption=API key guard (health endpoints exempt)]
+app.use((req, res, next) => {
+  if (!API_KEY) return next();
+  if (["/health", "/ollama/health"].includes(req.path)) return next();
+  if (req.header("x-api-key") !== API_KEY)
+    return res.status(401).json({ ok: false, error: "Unauthorized" });
+  next();
+});
+\end{lstlisting}
+
+\section{Endpoints}
+
+\subsection{GET /health}
+
+Returns system status, model configuration, and knowledge base statistics.
+
+\begin{lstlisting}[language=JSON, caption=GET /health response]
+{
+  "ok": true,
+  "service": "campuspaddy-retrieval-api",
+  "ollama_url": "http://127.0.0.1:11434",
+  "ollama_model": "llama3.1:8b",
+  "optimized_search": {
+    "has_chunk_search_vector": true,
+    "has_source_search_vector": true
+  },
+  "total_chunks": 25345,
+  "processed_sources": 11753,
+  "active_cached_answers": 2
+}
+\end{lstlisting}
+
+\subsection{POST /ask}
+
+Main chatbot endpoint.
+
+\textbf{Request:}
+\begin{lstlisting}[language=JSON]
+{
+  "question": "How do I contact accommodation?",
+  "limit": 3,
+  "useCache": true,
+  "universityDomain": "tees.ac.uk"
+}
+\end{lstlisting}
+
+\textbf{Response:}
+\begin{lstlisting}[language=JSON]
+{
+  "ok": true,
+  "cached": false,
+  "answer": "To contact accommodation at Teesside University, you can call 01642 342255 or email accommodation@tees.ac.uk ...",
+  "sources": [
+    { "number": 1, "title": "Contact us | Accommodation | Teesside University",
+      "url": "https://www.tees.ac.uk/sections/accommodation/contact.cfm",
+      "source_type": "html" },
+    { "number": 2, "title": "Frequently asked questions | Accommodation",
+      "url": "https://www.tees.ac.uk/sections/accommodation/faqs.cfm",
+      "source_type": "html" }
+  ],
+  "duration_ms": 5280,
+  "retrieval_duration_ms": 950
+}
+\end{lstlisting}
+
+\subsection{POST /retrieve}
+
+Returns raw chunks without LLM inference --- useful for debugging retrieval quality.
+
+\subsection{GET /cache/stats}
+
+Returns cache metrics: total cached answers, total hits, and average hits per question.
+
+\subsection{POST /cache/clear}
+
+Deactivates all cache entries (sets \texttt{is\_active = false}) for fresh generation.
+
+\section{Error Handling}
+
+\begin{table}[H]
+\centering
+\caption{HTTP status codes}
+\begin{tabular}{lll}
+\toprule
+\textbf{Code} & \textbf{Scenario} & \textbf{Response body} \\
+\midrule
+200 & Success                       & \texttt{\{"ok":true,...\}} \\
+400 & Missing question parameter    & \texttt{\{"ok":false,"error":"..."\}} \\
+401 & Invalid or missing API key    & \texttt{\{"ok":false,"error":"Unauthorized"\}} \\
+503 & Database or Ollama unreachable & \texttt{\{"ok":false,"error":"..."\}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% -----------------------------------------------------------------------------
+\chapter{Production Deployment}
+%% -----------------------------------------------------------------------------
+
+\section{AI Server Setup}
+
+\section{systemd Service}
+
+A systemd unit file makes the API start automatically on server boot and restart automatically after any crash:
+
+\begin{lstlisting}[language=ini, caption=/etc/systemd/system/campuspaddy-ai-api.service]
+[Unit]
+Description=CampusPaddy AI Retrieval API
+After=network-online.target ollama.service cloudflared.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=evil-guest
+WorkingDirectory=/home/evil-guest/campuspaddy-retrieval-api
+ExecStart=/usr/bin/npm run dev
+Environment="NODE_ENV=production"
+Restart=always
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash, caption=Enabling and starting the service]
+sudo systemctl daemon-reload
+sudo systemctl enable campuspaddy-ai-api
+sudo systemctl start  campuspaddy-ai-api
+sudo journalctl -u campuspaddy-ai-api -f   # follow live logs
+\end{lstlisting}
+
+\section{Cloudflare Tunnel}
+
+The API binds only to \texttt{localhost} to prevent direct internet access. Cloudflare Tunnel creates an encrypted outbound connection from the server to Cloudflare's edge, which maps the public hostname to the local port --- no firewall rules needed, no open inbound ports.
+
+\begin{lstlisting}[language=yaml, caption=/etc/cloudflared/config.yml]
+tunnel: 01077474-1853-460b-9744-7f5136679ea2
+credentials-file: /root/.cloudflared/01077474-...json
+
+ingress:
+  - hostname: campuspaddy-ai.edjenuwahome.uk
+    service:  http://localhost:3011
+  - service:  http_status:404
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+# Route the public hostname to the tunnel
+cloudflared tunnel route dns 01077474-... campuspaddy-ai.edjenuwahome.uk
+
+# Enable tunnel auto-start
+sudo systemctl enable cloudflared
+sudo systemctl start  cloudflared
+\end{lstlisting}
+
+%% -----------------------------------------------------------------------------
+\chapter{Performance Optimisation}
+%% -----------------------------------------------------------------------------
+
+\section{Before and After}
+
+The initial implementation used \texttt{ILIKE} pattern matching for retrieval, which requires a full table scan over 25,000 rows:
+
+\begin{table}[H]
+\centering
+\caption{Performance before and after optimisation}
+\begin{tabular}{llll}
+\toprule
+\textbf{Component} & \textbf{Before} & \textbf{After} & \textbf{Improvement} \\
+\midrule
+Retrieval    & 7--12\,s  & $\approx$0.95\,s & 88\% faster \\
+Inference    & 4--5\,s   & $\approx$4.3\,s  & marginal \\
+Total (cold) & 13--16\,s & $\approx$5.3\,s  & 68\% faster \\
+Cached       & 0.2\,s    & 0.2\,s           & maintained \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Optimisation Techniques}
+
+\subsubsection{1. GIN-Indexed \texttt{tsvector} Columns}
+
+Pre-computing the search vector and storing it in a \texttt{GENERATED ALWAYS AS...STORED} column eliminates per-query \texttt{to\_tsvector()} calls and allows the GIN index to be used:
+
+\begin{lstlisting}[language=sql]
+-- Before: computed at query time (no index usable)
+WHERE to_tsvector('english', chunk_text) @@ query
+
+-- After: GENERATED column + GIN index
+ALTER TABLE knowledge_chunks
+  ADD COLUMN chunk_search_vector tsvector
+  GENERATED ALWAYS AS (to_tsvector('english', chunk_text)) STORED;
+
+CREATE INDEX chunk_fts_gin ON knowledge_chunks USING GIN(chunk_search_vector);
+\end{lstlisting}
+
+\subsubsection{2. Candidate Oversample then Diversify}
+
+Fetching 18 candidates (6$\times$ the final limit) and then applying diversification gives better result quality than fetching exactly 3, because it allows the diversification algorithm to choose the best non-redundant set.
+
+\subsubsection{3. Connection Pooling}
+
+\begin{lstlisting}[language=TypeScript]
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl:  { rejectUnauthorized: true },
+  max:  10,     // max simultaneous connections to Neon
+  idleTimeoutMillis:   30000,
+  connectionTimeoutMillis: 10000
+});
+\end{lstlisting}
+
+\subsubsection{4. Ollama \texttt{keep\_alive}}
+
+Setting \texttt{keep\_alive: "24h"} prevents the model from being evicted from VRAM between requests. Without this, the first request after a quiet period incurs a 2--3\,s model reload.
+
+\section{Latency Breakdown}
+
+\begin{table}[H]
+\centering
+\caption{Profiling of a typical uncached request}
+\begin{tabular}{lrr}
+\toprule
+\textbf{Component} & \textbf{Duration (ms)} & \textbf{Share} \\
+\midrule
+Database retrieval       & 950  & 17.9\% \\
+Chunk diversification    & 10   & 0.2\% \\
+Context string build     & 20   & 0.4\% \\
+Ollama network overhead  & 200  & 3.8\% \\
+Ollama token generation  & 4100 & 77.4\% \\
+Response serialisation   & 20   & 0.4\% \\
+\midrule
+\textbf{Total}           & \textbf{5300} & \textbf{100\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+LLM token generation dominates. Further improvement would require streaming responses (SSE), a smaller model, or a faster GPU.
+
+%% -----------------------------------------------------------------------------
+\chapter{Results}
+%% -----------------------------------------------------------------------------
+
+The completed system was validated through direct API calls, database inspection, cache statistics, and integration testing with the MyPaddy mobile application. The key observed results were:
+
+\begin{itemize}[nosep]
+    \item \textbf{Knowledge base scale:} 11,753 processed sources and 25,345 knowledge chunks.
+    \item \textbf{Processing reliability:} 97.4\% processing success rate across HTML, PDF, and DOCX sources.
+    \item \textbf{Retrieval performance:} optimized full-text retrieval reduced query time to approximately 0.95 seconds.
+    \item \textbf{End-to-end latency:} uncached answers averaged approximately 5.3 seconds, with cached answers served in approximately 0.2 seconds.
+    \item \textbf{Deployment validation:} the public HTTPS API was served through Cloudflare Tunnel and managed by systemd.
+\end{itemize}
+
+Evidence is provided through implementation source code, database schema, API reference, performance notes, deployment templates, and generated report files.
+
+%% -----------------------------------------------------------------------------
+\chapter{Security Considerations}
+%% -----------------------------------------------------------------------------
+
+\section{API Key Management}
+
+The \texttt{x-api-key} header protects write endpoints and cache management. Keys are generated with:
+
+\begin{lstlisting}[language=bash]
+openssl rand -hex 32
+\end{lstlisting}
+
+Keys are stored only in \texttt{.env} files, which are excluded from version control via \texttt{.gitignore}.
+
+\section{No Open Inbound Ports}
+
+The server runs \emph{no} open inbound ports. The Cloudflare Tunnel creates an outbound connection only. This means:
+\begin{itemize}[nosep]
+    \item No SSH brute-force on the API port
+    \item No need for \texttt{ufw}/iptables rules for the API
+    \item TLS is handled by Cloudflare (valid certificate, HSTS)
+\end{itemize}
+
+\section{Secrets Never Committed}
+
+\begin{lstlisting}[caption=.gitignore entries protecting credentials]
+.env
+.env.local
+.env.*.local
+.cloudflared/
+cloudflare-credentials.json
+credentials.json
+secrets.json
+\end{lstlisting}
+
+All repository secrets are provided through \texttt{.env.example} template files with placeholder values only.
+
+\section{Data Privacy}
+
+The crawler does not access authenticated areas (login, student portals, Blackboard, e-vision). All scraped content is publicly accessible without credentials --- the same content any visitor to \texttt{tees.ac.uk} would see.
+
+%% -----------------------------------------------------------------------------
+\chapter{Conclusion and Future Work}
+%% -----------------------------------------------------------------------------
+
+\section{What Was Achieved}
+
+Starting from an idea conceived in second year with no clear implementation path, I built a complete, production-deployed RAG chatbot for Teesside University students. The final system:
+
+\begin{itemize}
+    \item Ethically scraped and indexed \textbf{11,753 pages} from \texttt{tees.ac.uk}
+    \item Produced a knowledge base of \textbf{25,345 text chunks}
+    \item Achieves a \textbf{97.4\% processing success rate}
+    \item Retrieves relevant context in \textbf{$\approx$0.95\,s} (down from 7--12\,s)
+    \item Answers uncached questions in \textbf{$\approx$5.3\,s} end-to-end
+    \item Serves \textbf{cached answers in $\approx$0.2\,s} (26.5$\times$ faster)
+    \item Runs \textbf{24/7 on a public HTTPS endpoint} with zero cloud LLM cost
+\end{itemize}
+
+The biggest engineering lessons were:
+\begin{enumerate}
+    \item \textbf{Ethical scraping is not optional.} Rate limiting and robots.txt compliance protect both the target server and the legitimacy of the project.
+    \item \textbf{Full-text search is highly capable.} PostgreSQL \texttt{tsvector} with GIN indexes delivered 88\% retrieval speedup without any external dependency.
+    \item \textbf{Caching is transformative.} A 14-day persistent cache reduced the majority of user-facing latency to a fraction of the cold-path cost.
+    \item \textbf{Separation of concerns is essential.} Running the scraper separately from the API allowed each to be iterated on independently.
+\end{enumerate}
+
+\section{Future Work}
+
+\begin{description}
+    \item[Short term] Streaming responses via Server-Sent Events (SSE) to show the answer as it is generated, eliminating the perceived 5-second wait.
+    \item[Medium term] \texttt{pgvector} semantic search alongside full-text search, giving the retriever both keyword precision and semantic recall.
+    \item[Medium term] A web UI making CampusPaddy accessible without requiring an API client.
+    \item[Long term] Scheduled re-crawling with change detection, so the knowledge base stays current as the university website updates.
+    \item[Long term] Extending the multi-university schema to serve other institutions by adding new \texttt{universities} rows and running the same pipeline against their domains.
+\end{description}
+
+%% -----------------------------------------------------------------------------
+\appendix
+%% -----------------------------------------------------------------------------
+
+\chapter{Installation Guide}
+
+\section{Scraper Server}
+
+\begin{lstlisting}[language=bash]
+# 1. System dependencies
+sudo apt update && sudo apt install -y postgresql nodejs npm git
+
+# 2. Database setup
+sudo -u postgres psql <<'SQL'
+CREATE USER campuspaddy WITH PASSWORD 'campuspaddy';
+CREATE DATABASE campuspaddy_local OWNER campuspaddy;
+SQL
+
+# 3. Project setup
+cd campuspaddy-ai-importer
+cp .env.example .env          # edit DATABASE_URL
+npm install
+psql postgresql://campuspaddy:campuspaddy@localhost/campuspaddy_local \
+  -f db/schema.sql
+
+# 4. Run pipeline
+npm run crawl:tees            # 6-8 hours
+npm run process:all           # 2-4 hours
+npm run report                # view statistics
+\end{lstlisting}
+
+\section{AI Server}
+
+\begin{lstlisting}[language=bash]
+# 1. Install Ollama and pull model
+curl -fsSL https://ollama.com/install.sh | sh
+ollama pull llama3.1:8b
+
+# 2. Project setup
+cd campuspaddy-retrieval-api
+cp .env.example .env          # set NEON_DATABASE_URL, API_KEY
+npm install
+npm run indexes               # create DB indexes
+npm run optimize:search       # add tsvector columns + GIN indexes
+
+# 3. Test locally
+npm run dev &
+curl -X POST http://127.0.0.1:3011/ask \
+  -H 'Content-Type: application/json' \
+  -d '{"question":"What is ExpoTees?"}'
+\end{lstlisting}
+
+\chapter{API Reference}
+
+\begin{center}
+\textbf{Base URL:} \url{https://campuspaddy-ai.edjenuwahome.uk}
+\end{center}
+
+\begin{table}[H]
+\centering
+\caption{Endpoint reference}
+\begin{tabular}{lllp{5cm}}
+\toprule
+\textbf{Method} & \textbf{Path} & \textbf{Auth} & \textbf{Description} \\
+\midrule
+GET  & /health        & None       & System health and stats \\
+GET  & /ollama/health & None       & Ollama model status \\
+GET  & /cache/stats   & API key    & Cache hit metrics \\
+POST & /cache/clear   & API key    & Deactivate all cache entries \\
+POST & /retrieve      & API key    & Retrieve chunks (no LLM) \\
+POST & /ask           & API key    & Full RAG question answering \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\chapter{Submission Package}
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Project}           & CampusPaddy AI Chatbot Knowledge Pipeline \\
+\textbf{Public API}        & \texttt{https://campuspaddy-ai.edjenuwahome.uk} \\
+\textbf{Licence}           & MIT \\
+\textbf{Author}            & Anthony Efemena Edjenuwa \\
+\textbf{University}        & Teesside University, Middlesbrough \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+
+\noindent The submission package contains the crawler and processing service, the retrieval API, deployment templates, the LaTeX report source, generated PDF reports used throughout this document. Runtime credentials and environment-specific secrets are intentionally excluded and represented only by \texttt{.env.example} templates.
+
+\end{document}

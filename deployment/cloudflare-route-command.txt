@@ -1,0 +1,3 @@
+cloudflared tunnel route dns 01077474-1853-460b-9744-7f5136679ea2 campuspaddy-ai.edjenuwahome.uk
+sudo systemctl restart cloudflared
+sudo systemctl status cloudflared --no-pager

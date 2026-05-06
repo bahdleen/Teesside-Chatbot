@@ -1,0 +1,29 @@
+{
+  "name": "campuspaddy-ai-importer",
+  "version": "1.0.0",
+  "description": "CampusPaddy Teesside University scraper, processor, chunker and Neon migration tools",
+  "main": "index.js",
+  "scripts": {
+    "crawl:tees": "tsx src/crawlTeesside.ts",
+    "process:sources": "tsx src/processSources.ts",
+    "process:all": "tsx src/processAllSources.ts",
+    "report": "tsx src/report.ts",
+    "check:db": "tsx src/checkDb.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "dotenv": "^17.4.2",
+    "mammoth": "^1.12.0",
+    "pdf-parse": "^2.4.5",
+    "pg": "^8.20.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/pg": "^8.20.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "campuspaddy-retrieval-api",
+  "version": "1.0.0",
+  "description": "CampusPaddy AI retrieval API using Neon, cache, and local Ollama",
+  "main": "index.js",
+  "scripts": {
+    "indexes": "tsx src/createIndexes.ts",
+    "optimize:search": "tsx src/optimizeSearch.ts",
+    "dev": "tsx src/server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^5.1.0",
+    "pg": "^8.20.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
+    "@types/node": "^25.6.0",
+    "@types/pg": "^8.20.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}

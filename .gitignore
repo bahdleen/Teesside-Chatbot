@@ -1,0 +1,89 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+Thumbs.db
+*.orig
+
+# Importer storage
+campuspaddy-ai-importer/storage/raw-html/*
+campuspaddy-ai-importer/storage/pdfs/*
+campuspaddy-ai-importer/storage/other/*
+!campuspaddy-ai-importer/storage/raw-html/.gitkeep
+!campuspaddy-ai-importer/storage/pdfs/.gitkeep
+!campuspaddy-ai-importer/storage/other/.gitkeep
+
+# Database backups
+*.sql
+*.dump
+backup.sql
+pg_dump.sql
+!campuspaddy-ai-importer/db/*.sql
+!campuspaddy-ai-importer/scripts/reset-stuck-processing.sql
+
+# Credentials and secrets
+credentials.json
+secrets.json
+.cloudflared/
+cloudflare-credentials.json
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Process files
+.pid
+.lock
+
+# LaTeX build artifacts
+*.aux
+*.out
+*.toc
+*.log
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.nav
+*.snm
+*.vrb
+*.bbl
+*.blg
+*.lof
+*.lot
+*.run.xml
+*.bcf
+# Keep report source and PDF output
+!docs/reports/*.tex
+!docs/reports/*.pdf
